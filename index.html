@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b2942">
+  <meta name="description" content="Prototipo PWA local para apoyo técnico a la seguridad de la navegación en el Golfo de Batabanó.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./assets/icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
+  <title>SM-GOLFO-BATABANÓ</title>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">SM</div>
+      <div>
+        <div class="eyebrow">SEGURIDAD MARÍTIMA · PROTOTIPO 0.2.0</div>
+        <h1>SM-GOLFO-BATABANÓ</h1>
+        <p>Evaluación hidrometeorológica · Nueva Gerona · Batabanó · Cayo Largo</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span id="connectionBadge" class="status-badge status-offline">Comprobando conexión…</span>
+      <button id="installButton" class="button button-light hidden" type="button">Instalar</button>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Secciones principales">
+    <button class="tab active" data-tab="inicio" type="button">Inicio</button>
+    <button class="tab" data-tab="meteorologia" type="button">Viento y oleaje</button>
+    <button class="tab" data-tab="seguridad" type="button">Seguridad</button>
+    <button class="tab" data-tab="puertos" type="button">Puertos y calados</button>
+    <button class="tab" data-tab="informes" type="button">Informes DOCX</button>
+  </nav>
+
+  <main>
+    <section class="global-warning">
+      <strong>PROTOTIPO TÉCNICO — NO ES UN SISTEMA OPERACIONAL.</strong>
+      No hay conexión activa a pronósticos meteorológicos. Los escenarios de demostración están rotulados y no representan condiciones reales.
+    </section>
+
+    <section id="panel-inicio" class="panel active">
+      <div class="page-heading">
+        <div>
+          <span class="eyebrow">PANEL DE CONTROL</span>
+          <h2>Estado de la navegación</h2>
+          <p>Datos locales del teléfono y estado de las integraciones.</p>
+        </div>
+        <span class="version-tag">Versión 0.2.0 · 12/11/2026</span>
+      </div>
+
+      <div class="summary-grid">
+        <article class="summary-card">
+          <span class="summary-label">Conectividad</span>
+          <strong id="connectionText">—</strong>
+          <small id="connectionDetail">Estado del dispositivo</small>
+        </article>
+        <article class="summary-card">
+          <span class="summary-label">Pronóstico</span>
+          <strong id="forecastStatus">Sin datos</strong>
+          <small id="forecastDetail">No hay fuente real conectada</small>
+        </article>
+        <article class="summary-card">
+          <span class="summary-label">Registros locales</span>
+          <strong id="recordCount">0</strong>
+          <small>Guardados en este dispositivo</small>
+        </article>
+        <article class="summary-card">
+          <span class="summary-label">Última actualización</span>
+          <strong id="lastUpdate">—</strong>
+          <small>Hora local del registro</small>
+        </article>
+      </div>
+
+      <div class="section-title-row">
+        <div>
+          <span class="eyebrow">CONDICIONES METEOROLÓGICAS</span>
+          <h3>Viento y estado de la mar</h3>
+        </div>
+        <span id="weatherModeBadge" class="mode-badge">SIN DATOS</span>
+      </div>
+      <div class="weather-grid">
+        <article class="weather-card">
+          <div class="weather-icon">↗</div>
+          <div>
+            <span class="summary-label">Viento</span>
+            <strong id="windValue">—</strong>
+            <small id="windMeta">Sin registro</small>
+          </div>
+        </article>
+        <article class="weather-card">
+          <div class="weather-icon wave-icon">≈</div>
+          <div>
+            <span class="summary-label">Estado de la mar</span>
+            <strong id="waveValue">—</strong>
+            <small id="waveMeta">Sin registro</small>
+          </div>
+        </article>
+      </div>
+      <div class="source-line">
+        <span>Fuente:</span> <strong id="weatherSource">No disponible</strong>
+        <span class="dot">•</span>
+        <span id="weatherValidity">No hay periodo de validez registrado</span>
+      </div>
+      <div class="button-row">
+        <button id="loadDemoButton" class="button button-primary" type="button">Cargar escenario demostrativo</button>
+        <button id="clearWeatherButton" class="button button-secondary" type="button">Limpiar panel meteorológico</button>
+        <button id="goMeteoButton" class="button button-quiet" type="button">Registrar pronóstico manual</button>
+      </div>
+
+      <div class="section-title-row sector-heading">
+        <div>
+          <span class="eyebrow">REFERENCIA ESPACIAL</span>
+          <h3>Esquema de sectores del Golfo</h3>
+        </div>
+        <span class="mode-badge warning-badge">NO GEOREFERENCIADO</span>
+      </div>
+      <p class="muted small">Esquema de identificación A–F construido únicamente con descripciones parciales recuperadas. No representa límites cartográficos ni permite asignar una derrota con precisión.</p>
+      <div class="sector-grid">
+        <article class="sector-card">
+          <div class="sector-letter">A</div>
+          <div><strong>Referencia parcial</strong><p>Norte de la Isla de la Juventud: desde la desembocadura del río Las Casas hasta el Paso del Cayo de la Manteca.</p></div>
+        </article>
+        <article class="sector-card incomplete">
+          <div class="sector-letter">B</div>
+          <div><strong>Límite individual pendiente</strong><p>La descripción recuperada agrupa B–D en mares al N–NE y E de la Isla de la Juventud.</p></div>
+        </article>
+        <article class="sector-card">
+          <div class="sector-letter">C</div>
+          <div><strong>Referencia parcial</strong><p>Surgidero de Batabanó: de Playa El Cajío a Playa Mayabeque y hacia el sur hasta los cayos de Buenavista. Validar con mapa oficial.</p></div>
+        </article>
+        <article class="sector-card incomplete">
+          <div class="sector-letter">D</div>
+          <div><strong>Límite individual pendiente</strong><p>Solo aparece agrupado con B–D en el material recuperado.</p></div>
+        </article>
+        <article class="sector-card incomplete">
+          <div class="sector-letter">E</div>
+          <div><strong>Descripción pendiente</strong><p>No se recuperó una delimitación geográfica inequívoca.</p></div>
+        </article>
+        <article class="sector-card">
+          <div class="sector-letter">F</div>
+          <div><strong>Referencia general</strong><p>Costa sur de la Isla de la Juventud. Límites exactos pendientes.</p></div>
+        </article>
+      </div>
+
+      <div class="section-title-row">
+        <div>
+          <span class="eyebrow">INTEGRACIONES</span>
+          <h3>Fuentes previstas</h3>
+        </div>
+      </div>
+      <div class="integration-grid">
+        <div class="integration-item"><strong>Centro de Pronóstico de la Isla</strong><span class="pending">Pendiente de integración</span></div>
+        <div class="integration-item"><strong>ECMWF</strong><span class="pending">Pendiente de integración</span></div>
+        <div class="integration-item"><strong>NOAA / WaveWatch III</strong><span class="pending">Pendiente de integración</span></div>
+        <div class="integration-item"><strong>Copernicus Marine</strong><span class="pending">Pendiente de integración</span></div>
+      </div>
+      <div class="reference-card" aria-live="polite">
+        <h3>Disponibilidad sin conexión</h3>
+        <p id="pwaStatus">Comprobando compatibilidad del navegador y registro de la aplicación…</p>
+        <small id="pwaDetail">La instalación requiere una dirección HTTPS. Esta comprobación no sustituye la prueba en el teléfono.</small>
+        <div class="button-row"><button id="checkOfflineButton" class="button button-secondary" type="button">Comprobar almacenamiento offline</button></div>
+        <p id="cacheStatus" class="small muted">Caché de recursos: sin comprobar.</p>
+      </div>
+    </section>
+
+    <section id="panel-meteorologia" class="panel">
+      <div class="page-heading">
+        <div><span class="eyebrow">ENTRADA DE INFORMACIÓN</span><h2>Registro de viento y oleaje</h2><p>Permite transcribir un parte recibido por un canal oficial. No descarga pronósticos automáticamente.</p></div>
+      </div>
+      <div class="callout info-callout">
+        <strong>Importante:</strong> una entrada manual se identifica como transcripción local; el sistema no verifica la autenticidad del parte. No conviertas automáticamente SWH en fuerza Douglas: esa correspondencia requiere validación normativa y técnica.
+      </div>
+      <form id="forecastForm" class="form-card">
+        <div class="form-grid">
+          <label class="field wide">Fuente / emisor
+            <input id="sourceInput" required maxlength="120" placeholder="Ej. Centro de Pronóstico de la Isla de la Juventud">
+          </label>
+          <label class="field">Fecha y hora de emisión
+            <input id="issuedInput" type="datetime-local" required>
+          </label>
+          <label class="field">Sector del pronóstico
+            <select id="sectorInput" required>
+              <option value="">Seleccionar sector</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option value="SIN_ASIGNAR">Sin asignación inequívoca</option>
+            </select>
+          </label>
+          <label class="field">Válido desde
+            <input id="validFromInput" type="datetime-local" required>
+          </label>
+          <label class="field">Válido hasta
+            <input id="validToInput" type="datetime-local" required>
+          </label>
+          <label class="field">Dirección del viento
+            <input id="windDirInput" maxlength="40" placeholder="Ej. NE">
+          </label>
+          <label class="field">Viento — fuerza Beaufort
+            <input id="windBInput" type="number" min="0" max="12" step="1" required placeholder="0–12">
+          </label>
+          <label class="field">Velocidad del viento (nudos), si consta
+            <input id="windKnotsInput" type="number" min="0" step="0.1" placeholder="No obligatorio">
+          </label>
+          <label class="field">Estado de la mar — fuerza Douglas
+            <input id="seaDInput" type="number" min="0" max="9" step="1" required placeholder="0–9">
+          </label>
+          <label class="field">Altura de ola (m), si consta
+            <input id="waveHeightInput" type="number" min="0" step="0.1" placeholder="No obligatorio">
+          </label>
+          <label class="field">Dirección del oleaje
+            <input id="waveDirInput" maxlength="40" placeholder="Si está disponible">
+          </label>
+          <label class="field wide">Observaciones / fenómenos asociados
+            <textarea id="notesInput" rows="3" maxlength="1200" placeholder="Rachas, tormentas, visibilidad, mar de fondo, etc."></textarea>
+          </label>
+        </div>
+        <div class="button-row">
+          <button class="button button-primary" type="submit">Guardar registro local</button>
+          <button class="button button-secondary" id="resetForecastForm" type="reset">Limpiar formulario</button>
+        </div>
+        <p class="form-footnote">El registro queda almacenado en este teléfono. No se sincroniza con servidores en esta versión.</p>
+      </form>
+      <div class="section-title-row"><div><span class="eyebrow">HISTORIAL DEL DISPOSITIVO</span><h3>Registros almacenados</h3></div></div>
+      <div id="recordsList" class="records-list"><p class="muted">Todavía no hay registros locales.</p></div>
+    </section>
+
+    <section id="panel-seguridad" class="panel">
+      <div class="page-heading">
+        <div><span class="eyebrow">EVALUACIÓN PREVENTIVA</span><h2>Evaluación de seguridad</h2><p>Compara viento y estado de la mar por separado, según la clase del buque.</p></div>
+      </div>
+      <div class="callout warning-callout">
+        La evaluación solo puede utilizar datos cargados en el panel. Si no existe pronóstico registrado, no emite conclusión. La recomendación es técnica y no constituye una orden de cierre o suspensión de la autoridad marítima.
+      </div>
+      <div class="form-card">
+        <h3>Datos del buque</h3>
+        <div class="form-grid">
+          <label class="field">Arqueo bruto (GT)
+            <input id="vesselGT" type="number" min="0" step="0.1" placeholder="Introducir GT">
+          </label>
+          <label class="field">Eslora (m)
+            <input id="vesselLOA" type="number" min="0" step="0.01" placeholder="Introducir eslora">
+          </label>
+        </div>
+        <p class="form-footnote">La categoría reducida se aplica cuando GT es inferior a 100 <strong>o</strong> la eslora es inferior a 24 m, conforme al texto recuperado del artículo 4 de DSIM 05/2008.</p>
+        <button id="evaluateButton" class="button button-primary" type="button">Evaluar con el registro actual</button>
+      </div>
+      <div id="evaluationResult" class="result-card empty-result">
+        <strong>Evaluación pendiente</strong>
+        <p>Registra un pronóstico y completa GT y eslora del buque.</p>
+      </div>
+      <div class="reference-card">
+        <h3>Criterios de referencia incorporados</h3>
+        <div class="threshold-grid">
+          <div><strong>GT inferior a 100 o eslora inferior a 24 m</strong><p>Mar: superior a fuerza 3 Douglas.</p><p>Viento: superior a fuerza 4 Beaufort.</p></div>
+          <div><strong>Resto de los buques</strong><p>Mar: superior a fuerza 4 Douglas.</p><p>Viento: superior a fuerza 5 Beaufort.</p></div>
+        </div>
+        <small>Referencia: Instrucción DSIM 05/2008, art. 4. La situación jurídica se incorpora según la indicación del usuario; falta evidencia formal recuperada sobre la desestimación de la Instrucción 1/2025.</small>
+      </div>
+    </section>
+
+    <section id="panel-puertos" class="panel">
+      <div class="page-heading">
+        <div><span class="eyebrow">RESTRICCIONES LOCALES</span><h2>Puertos, canales y calados</h2><p>Comprobaciones preliminares contra parámetros transcritos del Libro de Calados 2026.</p></div>
+      </div>
+      <div class="callout warning-callout">
+        Verifica siempre la edición vigente, el certificado aplicable, las actualizaciones y las condiciones reales del canal. Algunas certificaciones de instalaciones que aparecen en el Libro de Calados 2026 pueden haber vencido; esta versión no consulta su vigencia.
+      </div>
+      <div class="form-card">
+        <div class="form-grid">
+          <label class="field wide">Área / acceso
+            <select id="portArea">
+              <option value="manteca">Pasa de la Manteca</option>
+              <option value="monterrey">Canal de Monterrey</option>
+              <option value="siguanea">Canal de entrada — Siguanea (Nueva Gerona)</option>
+              <option value="lasCasas">Canal de entrada — Río Las Casas (Nueva Gerona)</option>
+              <option value="batabanoFerry">Muelle carga general — Ferry (Batabanó)</option>
+              <option value="cayoAnchorage">Fondeadero internacional (Cayo Largo)</option>
+              <option value="cayoGeneral">Muelle carga general (Cayo Largo)</option>
+              <option value="cayoAridos">Muelle de áridos (Cayo Largo)</option>
+            </select>
+          </label>
+          <label class="field">Eslora del buque (m)
+            <input id="portLOA" type="number" min="0" step="0.01" placeholder="m">
+          </label>
+          <label class="field">Calado del buque (m)
+            <input id="portDraft" type="number" min="0" step="0.01" placeholder="m">
+          </label>
+          <label class="field">Viento (fuerza Beaufort), si aplica
+            <input id="portWind" type="number" min="0" max="12" step="1" placeholder="0–12">
+          </label>
+          <label class="field">Tipo de buque
+            <select id="portVesselType"><option value="general">General</option><option value="ferry">Ferry de pasajeros</option><option value="catamaran">Catamarán de pasaje</option></select>
+          </label>
+          <label class="check-field"><input id="daylightCheck" type="checkbox"> Maniobra en horario diurno</label>
+          <label class="check-field"><input id="noTrafficCheck" type="checkbox"> Confirmado: no hay otro buque dentro de la Pasa (si aplica)</label>
+        </div>
+        <button id="checkPortButton" class="button button-primary" type="button">Comprobar parámetros</button>
+      </div>
+      <div id="portResult" class="result-card empty-result"><strong>Comprobación pendiente</strong><p>Introduce los datos del buque y selecciona el área.</p></div>
+      <div id="portReference" class="reference-card"></div>
+    </section>
+
+    <section id="panel-informes" class="panel">
+      <div class="page-heading">
+        <div><span class="eyebrow">DOCUMENTACIÓN</span><h2>Informes técnicos DOCX</h2><p>Generación local de un documento Word a partir del registro y las evaluaciones del dispositivo.</p></div>
+      </div>
+      <div class="callout info-callout">
+        El informe se genera en el teléfono, sin servidor ni conexión. Los datos demostrativos se identifican dentro del documento. La salida es un borrador técnico del prototipo, no un dictamen oficial.
+      </div>
+      <div class="report-preview" id="reportPreview">
+        <span class="eyebrow">VISTA PREVIA</span>
+        <h3>Informe de evaluación hidrometeorológica</h3>
+        <p>Sin registro meteorológico seleccionado. El documento indicará expresamente que no hay pronóstico real disponible.</p>
+      </div>
+      <div class="button-row">
+        <button id="generateDocxButton" class="button button-primary" type="button">Generar informe DOCX</button>
+        <button id="exportJsonButton" class="button button-secondary" type="button">Exportar datos locales (JSON)</button>
+      </div>
+      <div class="reference-card">
+        <h3>Contenido previsto del informe</h3>
+        <ol>
+          <li>Identificación del análisis y datos del buque.</li>
+          <li>Fuentes, emisión y periodo de validez del pronóstico.</li>
+          <li>Viento y estado de la mar por separado.</li>
+          <li>Comparación con los criterios DSIM 05/2008.</li>
+          <li>Restricciones del Libro de Calados aplicables.</li>
+          <li>Limitaciones, incertidumbre y recomendación técnica.</li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>SM-GOLFO-BATABANÓ · Prototipo PWA local</div>
+    <div>Apoyo técnico. No sustituye al Centro de Pronóstico ni a la autoridad marítima competente.</div>
+  </footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
